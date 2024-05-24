@@ -1,0 +1,4 @@
+.vscode/
+.idea/
+*.in
+*.out
