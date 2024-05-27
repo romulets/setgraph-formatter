@@ -15,6 +15,9 @@ const setNameSep = " • "
 type setParser func(string) []rep
 
 var (
+	footer             = regexp.MustCompile("\nStrength Training.*\n\nTracked on Setgraph\n?")
+	multipleLineBreaks = regexp.MustCompile("(\n){2,}")
+
 	pattern1 = regexp.MustCompile("^[0-9]+ sets: [0-9]+ rep( [0-9.]+ kg)?")
 	pattern2 = regexp.MustCompile("^([0-9]+×[0-9.]+ kg,?)+")
 	pattern3 = regexp.MustCompile("^[0-9.]+ kg: ([0-9]+,? )+rep$")
@@ -45,13 +48,14 @@ type rep struct {
 }
 
 func main() {
-	input, err := getInput()
+	raw, err := getInput()
 	if err != nil {
 		fmt.Println("error: ", err.Error())
 		os.Exit(1)
 	}
 
-	sessions := parseInput(input)
+	clean := cleanInput(raw)
+	sessions := parseInput(clean)
 	transformed := convertToString(sessions)
 
 	if err := saveSession(transformed); err != nil {
@@ -60,14 +64,23 @@ func main() {
 	}
 }
 
+func cleanInput(raw string) []string {
+	withoutFooter := footer.ReplaceAllString(raw, "\n")
+	withoutDoubleBlankLines := multipleLineBreaks.ReplaceAllString(withoutFooter, "\n\n")
+	withoutTrailingLineBrakes := strings.Trim(withoutDoubleBlankLines, "\n")
+	return strings.Split(withoutTrailingLineBrakes, "\n")
+}
+
 func parseInput(input []string) []liftSession {
 	sessions := make([]liftSession, 0, 31) // arbitrary number of a month max
 
 	curSess := newSession()
 	for _, l := range input {
 		if l == "" {
-			sessions = append(sessions, curSess)
-			curSess = newSession()
+			if len(curSess.sets) > 0 {
+				sessions = append(sessions, curSess)
+				curSess = newSession()
+			}
 			continue
 		}
 
@@ -77,7 +90,9 @@ func parseInput(input []string) []liftSession {
 		curSess.sets = append(curSess.sets, liftSet{name: name, reps: parseRep(unparsedRep)})
 	}
 
-	sessions = append(sessions, curSess)
+	if len(curSess.sets) != 0 {
+		sessions = append(sessions, curSess)
+	}
 
 	return sessions
 }
@@ -171,17 +186,17 @@ func parsePattern5(l string) []rep {
 	return reps
 }
 
-func getInput() ([]string, error) {
+func getInput() (string, error) {
 	if len(os.Args) < 2 {
-		return nil, errors.New("No input file provided")
+		return "", errors.New("no input file provided")
 	}
 
 	data, err := os.ReadFile(os.Args[1])
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return strings.Split(strings.TrimRight(string(data), "\n"), "\n"), nil
+	return string(data), nil
 }
 
 func saveSession(session string) error {
@@ -191,13 +206,12 @@ func saveSession(session string) error {
 }
 
 func convertToString(sessions []liftSession) string {
-	b := strings.Builder{}
-	for _, s := range sessions {
-		b.WriteString(s.string())
-		b.WriteRune('\n')
+	strSess := make([]string, len(sessions))
+	for i, s := range sessions {
+		strSess[i] = s.string()
 	}
 
-	return b.String()
+	return strings.Join(strSess, "\n")
 }
 
 func (l liftSession) string() string {
