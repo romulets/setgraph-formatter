@@ -58,10 +58,16 @@ func main() {
 	sessions := parseInput(clean)
 	transformed := convertToString(sessions)
 
-	if err := saveSession(transformed); err != nil {
-		fmt.Println("error: ", err.Error())
-		os.Exit(1)
+	if len(os.Args) >= 3 && os.Args[2] == "-f" {
+		if err := saveSession(transformed); err != nil {
+			fmt.Println("error: ", err.Error())
+			os.Exit(1)
+		}
+
+		return
 	}
+
+	fmt.Println(transformed)
 }
 
 func cleanInput(raw string) []string {

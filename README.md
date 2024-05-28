@@ -10,10 +10,22 @@ Download the repo and `go install` or `go install github.com/romulets/setgraph-f
 
 ### Running
 
-```
+```shell
 setgraph-formatter $IN_FILE
 ```
 
 `$IN_FILE` can have multiple sessions, separated by a blank line. See `./testdata/in.txt` for example.
 
-Output: new file with today's date containing the parsed file
+Output: converted sessions
+
+common usage to get only the values:
+
+```shell
+setgraph-formatter setgraph.in | awk -F '\t' '{print $2}'
+```
+
+If you rather get it saved to a file, pass the `-f` param, like
+
+```shell
+setgraph-formatter $IN_FILE -f
+```
