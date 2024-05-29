@@ -29,3 +29,9 @@ If you rather get it saved to a file, pass the `-f` param, like
 ```shell
 setgraph-formatter $IN_FILE -f
 ```
+
+If you rather read from clipboard instead of file:
+
+```shell
+setgraph-formatter -c
+```

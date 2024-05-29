@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"golang.design/x/clipboard"
 	"os"
 	"regexp"
 	"strconv"
@@ -58,16 +59,20 @@ func main() {
 	sessions := parseInput(clean)
 	transformed := convertToString(sessions)
 
-	if len(os.Args) >= 3 && os.Args[2] == "-f" {
-		if err := saveSession(transformed); err != nil {
-			fmt.Println("error: ", err.Error())
-			os.Exit(1)
+	printToStdout := true
+	for _, arg := range os.Args {
+		if arg == "-f" {
+			if err := saveSession(transformed); err != nil {
+				fmt.Println("error: ", err.Error())
+				os.Exit(1)
+			}
+			printToStdout = false
 		}
-
-		return
 	}
 
-	fmt.Println(transformed)
+	if printToStdout {
+		fmt.Println(transformed)
+	}
 }
 
 func cleanInput(raw string) []string {
@@ -193,6 +198,12 @@ func parsePattern5(l string) []rep {
 }
 
 func getInput() (string, error) {
+	for _, arg := range os.Args {
+		if arg == "-c" {
+			return string(clipboard.Read(clipboard.FmtText)), nil
+		}
+	}
+
 	if len(os.Args) < 2 {
 		return "", errors.New("no input file provided")
 	}
