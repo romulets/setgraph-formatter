@@ -34,6 +34,13 @@ var (
 	}
 )
 
+type args struct {
+	inputFile     string // FILE_NAME
+	sortFile      string // -s="FILE_NAME"
+	sort          bool   // if sortFile Exists
+	saveToFile    bool   // -f
+	fromClipboard bool   // -c
+}
 type liftSession struct {
 	sets []liftSet
 }
@@ -49,30 +56,105 @@ type rep struct {
 }
 
 func main() {
-	raw, err := getInput()
+	conf, err := parseArgs()
 	if err != nil {
 		fmt.Println("error: ", err.Error())
 		os.Exit(1)
+	}
+
+	if err := runAndStore(conf); err != nil {
+		fmt.Println("error: ", err.Error())
+		os.Exit(1)
+	}
+}
+
+func runAndStore(conf args) error {
+	transformed, err := readAndConvertSessions(conf)
+	if err != nil {
+		return err
+	}
+
+	if conf.saveToFile {
+		if err := saveSession(transformed); err != nil {
+			return err
+		}
+	} else {
+		fmt.Println(transformed)
+	}
+
+	return nil
+}
+
+func readAndConvertSessions(conf args) (string, error) {
+	raw, err := getInput(conf)
+	if err != nil {
+		return "", err
 	}
 
 	clean := cleanInput(raw)
 	sessions := parseInput(clean)
 	transformed := convertToString(sessions)
 
-	printToStdout := true
-	for _, arg := range os.Args {
-		if arg == "-f" {
-			if err := saveSession(transformed); err != nil {
-				fmt.Println("error: ", err.Error())
-				os.Exit(1)
+	return transformed, nil
+}
+
+func getInput(conf args) (string, error) {
+	if conf.fromClipboard {
+		return string(clipboard.Read(clipboard.FmtText)), nil
+	}
+
+	data, err := os.ReadFile(conf.inputFile)
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), nil
+}
+
+func parseArgs() (args, error) {
+	a := args{}
+
+	for i, l := range os.Args {
+		switch l {
+		case "-c":
+			a.fromClipboard = true
+		case "-f":
+			a.saveToFile = true
+		case "-s":
+			if len(os.Args) <= i+1 {
+				continue
 			}
-			printToStdout = false
+
+			file := os.Args[i+1]
+			if _, err := os.Stat(file); err != nil {
+				return args{}, err
+			}
+
+			a.sort = true
+			a.sortFile = trimQuotes(file)
 		}
 	}
 
-	if printToStdout {
-		fmt.Println(transformed)
+	if a.fromClipboard {
+		return a, nil
 	}
+
+	if len(os.Args) < 2 {
+		return args{}, errors.New("no input file provided")
+	}
+
+	file := os.Args[1]
+	if _, err := os.Stat(file); err != nil {
+		return args{}, err
+	}
+
+	a.inputFile = trimQuotes(file)
+
+	return a, nil
+}
+
+func trimQuotes(s string) string {
+	return strings.Trim(strings.Trim(s, "\""), "'")
 }
 
 func cleanInput(raw string) []string {
@@ -195,25 +277,6 @@ func parsePattern5(l string) []rep {
 		reps[i].weight = float64(weight)
 	}
 	return reps
-}
-
-func getInput() (string, error) {
-	for _, arg := range os.Args {
-		if arg == "-c" {
-			return string(clipboard.Read(clipboard.FmtText)), nil
-		}
-	}
-
-	if len(os.Args) < 2 {
-		return "", errors.New("no input file provided")
-	}
-
-	data, err := os.ReadFile(os.Args[1])
-	if err != nil {
-		return "", err
-	}
-
-	return string(data), nil
 }
 
 func saveSession(session string) error {

@@ -8,10 +8,8 @@ import (
 )
 
 func TestFull(t *testing.T) {
-	in, err := os.ReadFile("./testdata/in.txt")
-	if err != nil {
-		t.Error(err)
-		return
+	conf := args{
+		inputFile: "./testdata/in.txt",
 	}
 
 	expected, err := os.ReadFile("./testdata/out.txt")
@@ -20,9 +18,11 @@ func TestFull(t *testing.T) {
 		return
 	}
 
-	clean := cleanInput(string(in))
-	sessions := parseInput(clean)
-	transformed := convertToString(sessions)
+	transformed, err := readAndConvertSessions(conf)
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
 	if string(expected) != transformed {
 		t.Errorf("out.txt doesn't match result, result:\n %s", transformed)
