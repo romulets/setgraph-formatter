@@ -6,6 +6,7 @@ import (
 	"golang.design/x/clipboard"
 	"os"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -93,9 +94,54 @@ func readAndConvertSessions(conf args) (string, error) {
 
 	clean := cleanInput(raw)
 	sessions := parseInput(clean)
-	transformed := convertToString(sessions)
+	sorted, err := sortSets(conf, sessions)
+	if err != nil {
+		return "", err
+	}
+
+	transformed := convertToString(sorted)
 
 	return transformed, nil
+}
+
+func sortSets(conf args, sessions []liftSession) ([]liftSession, error) {
+	if !conf.sort {
+		return sessions, nil
+	}
+
+	data, err := os.ReadFile(conf.sortFile)
+	if err != nil {
+		return sessions, err
+	}
+
+	lines := strings.Split(string(data), "\n")
+	reverseIndex := make(map[string]int)
+
+	for i, l := range lines {
+		reverseIndex[cleanReverseIndex(l)] = i
+	}
+
+	for _, session := range sessions {
+		slices.SortFunc(session.sets, func(a, b liftSet) int {
+			posA := -1
+			if pos, exists := reverseIndex[cleanReverseIndex(a.name)]; exists {
+				posA = pos
+			}
+
+			posB := -1
+			if pos, exists := reverseIndex[cleanReverseIndex(b.name)]; exists {
+				posB = pos
+			}
+
+			return posA - posB
+		})
+	}
+
+	return sessions, nil
+}
+
+func cleanReverseIndex(l string) string {
+	return strings.ToLower(strings.TrimSpace(l))
 }
 
 func getInput(conf args) (string, error) {

@@ -3,26 +3,26 @@ Standing leg curl	15kg 3*18/15/12
 Leg press + calf raises	120kg 3*25/20/15
 Hip Thrusts	60kg 3*18/16/14
 Leg Extension	30kg 3*20
-Reverse grip lat pulldown	35kg 3*15
 Single arm iliac pulldown	5/7.5/7.5kg 3*15/16/16
+Reverse grip lat pulldown	35kg 3*15
 Abs rolling wheel	0kg 3*15
 
 Seated Chest flys (Cable, DB, Machine)	30/35/35kg 3*18/15/15
 Bench Press	70kg 3*8/10/10
-Incline Bench Back rows (DBs pronated grip upper back focus)	7kg 3*16
-Seated Back rows (cable station or Techno machine)	35kg 3*16
-Pull ups assisted	42kg 3*18/20/20
 Seated Chest press (Techno machine)	30kg 3*18
+Incline Bench Back rows (DBs pronated grip upper back focus)	7kg 3*16
+Pull ups assisted	42kg 3*18/20/20
+Seated Back rows (cable station or Techno machine)	35kg 3*16
 Resistance band Knee raises	0kg 3*10
 
 Multi hip-m Abduction 	15kg 3*20/25/25
 Hip thrust	18kg 3*60
 Squat (on the machine) or Walking Lunges (Keeping the bar in front of you)	50kg 2*18
 Leg extensions	27.5/30/30kg 3*25/20/18
+Leg Curls	32.5/35/35/35kg 4*25/20/18/18
 Adduction	50kg 3*20
 Seated Iliac pulldown	35kg 3*16
 Lat prayer 	15kg 2*20
-Leg Curls	32.5/35/35/35kg 4*25/20/18/18
 
 Upright rows (wide grip) + Uprigth rows (small grip)	10kg 3*14/15/15
 Shoulder press (Y-machine)	20kg 3*12/15/15
@@ -60,7 +60,7 @@ Resistance band Knee raises	0kg 2*10
 Multi hip-m Abduction 	17.5kg 2*25
 Hip thrust	50kg 4*18
 Squat (on the machine) or Walking Lunges (Keeping the bar in front of you)	55kg 2*18
-Seated Iliac pulldown	17.5kg 1*16
 Leg Curls	35/35/35/35/27.5/30/30kg 7*25/20/18/18/25/20/18
-Lat prayer 	15/17.5kg 2*20
 Adduction	50kg 3*20
+Seated Iliac pulldown	17.5kg 1*16
+Lat prayer 	15/17.5kg 2*20

@@ -35,3 +35,12 @@ If you rather read from clipboard instead of file:
 ```shell
 setgraph-formatter -c
 ```
+
+There is also an option to sort the output based on a list of values provided in file, the option is `-s $FILE`. 
+You can see an example of the file in `./testdata/format.txt`
+
+Personal current favorite flavor:
+
+```shell
+setgraph-formatter -c -s ~/sort.idx | awk -F '\t' '{print $2}'
+```

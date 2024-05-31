@@ -10,6 +10,8 @@ import (
 func TestFull(t *testing.T) {
 	conf := args{
 		inputFile: "./testdata/in.txt",
+		sort:      true,
+		sortFile:  "./testdata/format.txt",
 	}
 
 	expected, err := os.ReadFile("./testdata/out.txt")
